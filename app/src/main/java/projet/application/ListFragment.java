@@ -1,5 +1,4 @@
 package projet.application;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,26 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import projet.application.databinding.FragmentFirstBinding;
+public class ListFragment extends Fragment {
 
-public class FirstFragment extends Fragment {
-
-    private FragmentFirstBinding binding;
     RecyclerViewAdapter adapter;
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
-
-        return binding.getRoot();
-
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.layout,container,false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler);
         recyclerView.setLayoutManager((new LinearLayoutManager(view.getContext())));
         ArrayList<Music> musicArrayList = new ArrayList<>();
@@ -40,14 +28,21 @@ public class FirstFragment extends Fragment {
         musicArrayList.add(new Music("titre 2","artiste 2"));
         musicArrayList.add(new Music("titre 3","artiste 3"));
         musicArrayList.add(new Music("blabla","blabla"));
-        adapter = new RecyclerViewAdapter(view.getContext(), musicArrayList);
+        adapter = new RecyclerViewAdapter(this.getContext(), musicArrayList);
         recyclerView.setAdapter(adapter);
+
+        return view;
+
+
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
     }
 
 }

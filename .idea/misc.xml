@@ -3,13 +3,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/drawable/ic_pause_black_24dp.xml" value="0.1155" />
-        <entry key="app/src/main/res/drawable/ic_play_arrow_black_24dp.xml" value="0.1155" />
-        <entry key="app/src/main/res/drawable/media_overlay_background.xml" value="0.1155" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.17753623188405798" />
-        <entry key="app/src/main/res/layout/content_main.xml" value="0.17753623188405798" />
-        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.5" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1615" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/drawable/ic_album_black_24dp.xml" value="0.1615" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1615" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/drawable/ic_pause_black_24dp.xml" value="0.203" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/drawable/media_item_background.xml" value="0.1615" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/drawable/media_item_mask.xml" value="0.1615" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/layout/content_main.xml" value="0.1" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/layout/fragment_first.xml" value="0.25" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/layout/fragment_second.xml" value="0.1" />
+        <entry key="..\:/Users/Admin/StudioProjects/projet-application-distribue/app/src/main/res/layout/layout.xml" value="0.16843971631205673" />
+        <entry key="app/src/main/res/drawable/ic_album_black_24dp.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/media_item_background.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/media_item_mask.xml" value="0.155" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.25" />
       </map>
     </option>
   </component>

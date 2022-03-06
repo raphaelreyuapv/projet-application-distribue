@@ -14,7 +14,7 @@
         android:scaleType="centerCrop"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_album_black_24dp"
+        app:srcCompat="@drawable/music"
         tools:ignore="ContentDescription" />
 
     <ImageView
