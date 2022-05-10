@@ -1,5 +1,6 @@
 package projet.application;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -18,15 +19,37 @@ import projet.application.databinding.ActivityMainBinding;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private LibVLC mLibVLC = null;
+    private MediaPlayer mMediaPlayer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+
+        mLibVLC = new LibVLC(this,args);
+        mMediaPlayer = new MediaPlayer(mLibVLC);
+        try{
+            final Media media = new Media(mLibVLC, Uri.parse("http://10.0.2.2:1234/stream.mp3"));
+            mMediaPlayer.setMedia(media);
+            media.release();
+            mMediaPlayer.play();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
