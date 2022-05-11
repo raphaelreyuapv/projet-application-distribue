@@ -21,6 +21,7 @@ import okhttp3.Response;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.StrictMode;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -39,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -214,38 +216,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getListSongServeur( String URL){
-        postRequest("This argument doesn't matter",URL+"search");
+        JSONArray json = null;
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+        try{
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url("http://10.0.2.2:5000/search")
+                    .build();
+            Response responses = null;
+
+            try {
+                responses = client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String jsonData = responses.body().string();
+            Log.d("fuckyou",jsonData);
+            json = new JSONArray(jsonData);
+        }catch(Exception e){
+            Log.d("fuckyou",e.toString());
+
+        }
         Log.d(TAG, "request sent");
 
-        if(fragment.getClass()==ListFragment.class && serverResponse!=null){
+        if(fragment.getClass()==ListFragment.class){
 
 
 
-            Log.d(TAG, "verif valeur = " + serverResponse);
+            //Log.d(TAG, "verif valeur = " + serverResponse);
 
-            /*
+
             // Convert String to json object
-            JSONObject json = null;
             try {
-                json = new JSONObject(serverResponse.body().string());
 
                 // get LL json object
-                JSONObject json_LL = json.getJSONObject(Integer.toString(0));
+
 
                 // get value from LL Json Object
-                String str_value=json_LL.getString("0");
+                String str_value=json.getString(0);
 
                 Log.d(TAG, str_value);
 
 
-            } catch (JSONException | IOException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
 
-            */
-            ((ListFragment) fragment).addToMusicArrayList(serverResponse.body().toString(), serverResponse.body().toString());
+            try {
+                ((ListFragment) fragment).addToMusicArrayList(json.getString(0), json.getString(0));
+            }catch(Exception e){
 
+            }
             fragment = new ListFragment();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
