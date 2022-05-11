@@ -15,6 +15,9 @@ public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
 
+    private String curTitle = "default";
+    private String curArtist = "value";
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -22,12 +25,16 @@ public class SecondFragment extends Fragment {
     ) {
 
         binding = FragmentSecondBinding.inflate(inflater, container, false);
+
         return binding.getRoot();
 
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        updateTitle() ;
+        updateArtist() ;
 
         /*
         binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
@@ -37,6 +44,26 @@ public class SecondFragment extends Fragment {
                         .navigate(R.id.action_SecondFragment_to_FirstFragment);
             }
         });*/
+    }
+
+    public void setTitle(String title){
+        curTitle = title;
+    }
+
+    public void setArtist(String artist){
+        curArtist = artist;
+    }
+
+    public void updateTitle(){
+
+        binding.title.setText(curTitle);
+
+    }
+
+    public void updateArtist(){
+
+        binding.subtitle.setText(curArtist);
+
     }
 
     @Override
