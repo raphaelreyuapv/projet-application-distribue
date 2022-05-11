@@ -7,6 +7,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -43,6 +44,9 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean recording = false;
     SpeechRecognizer speechRec = null;
     private String url = "http://10.0.2.2:5000/";
-
+    private LibVLC mLibVLC = null;
+    private MediaPlayer mMediaPlayer = null;
     private String postBodyString;
     private MediaType mediaType;
     private RequestBody requestBody;
@@ -118,9 +123,10 @@ public class MainActivity extends AppCompatActivity {
                     recording = !recording;
 
                 }
-                getListSongServeur(url);
+
             }
         });
+        getListSongServeur(url);
     }
 
     @Override
@@ -203,7 +209,8 @@ public class MainActivity extends AppCompatActivity {
 
             Snackbar.make(myView, data.get(0).toString(), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            postRequest(data.get(0).toString(),url+"read");
+            postRequest(data.get(0).toString(),url+"recon");
+            openSongPage("VLC stream");
         }
         public void onPartialResults(Bundle partialResults)
         {
@@ -215,6 +222,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void playSong(){
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+        if(mLibVLC==null) {
+            mLibVLC = new LibVLC(this, args);
+            mMediaPlayer = new MediaPlayer(mLibVLC);
+            try {
+                final Media media = new Media(mLibVLC, Uri.parse("http://10.0.2.2:1234/stream.mp3"));
+                mMediaPlayer.setMedia(media);
+                media.release();
+                mMediaPlayer.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void stopSong(){
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mLibVLC.release();
+            mMediaPlayer = null;
+            mLibVLC = null;
+    }
     private void getListSongServeur( String URL){
         JSONArray json = null;
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -266,7 +296,10 @@ public class MainActivity extends AppCompatActivity {
 
 
             try {
-                ((ListFragment) fragment).addToMusicArrayList(json.getString(0), json.getString(0));
+                for(int i=0;i<json.length();i++) {
+                    ((ListFragment) fragment).addToMusicArrayList(json.getString(i), json.getString(i));
+
+                }
             }catch(Exception e){
 
             }
@@ -279,18 +312,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSongPage(String name) {
-        ArrayList<Music> knownSongs = ((ListFragment) fragment).getMusicList().getList();
-        for(Music song : knownSongs){
-            if(song.title==name){
                 fragment = new SecondFragment();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
 
-                ((SecondFragment) fragment).setTitle(song.title);
-                ((SecondFragment) fragment).setArtist(song.artist);
+                ((SecondFragment) fragment).setTitle("Stream VLC");
+                ((SecondFragment) fragment).setArtist("Stream VLC");
 
-            }
-        }
+
+
 
     }
 
@@ -328,7 +358,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            Toast.makeText(MainActivity.this, response.body().string(), Toast.LENGTH_LONG).show();
+                            String cont = response.body().string();
+                            Toast.makeText(MainActivity.this, cont, Toast.LENGTH_LONG).show();
+                            if(cont.equals("OK")){
+                                playSong();
+                            }else if(cont.equals("stop")){
+                                    stopSong();
+                            }
                             Log.d(TAG, "response received");
                             serverResponse = response;
                         } catch (IOException e) {

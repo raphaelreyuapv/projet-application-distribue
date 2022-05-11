@@ -1,5 +1,6 @@
 package projet.application;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
+
+import java.util.ArrayList;
+
 import projet.application.databinding.FragmentSecondBinding;
 
 public class SecondFragment extends Fragment {
@@ -17,7 +24,6 @@ public class SecondFragment extends Fragment {
 
     private String curTitle = "default";
     private String curArtist = "value";
-
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
