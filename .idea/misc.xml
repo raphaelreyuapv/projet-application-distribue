@@ -17,7 +17,8 @@
         <entry key="app/src/main/res/drawable/ic_album_black_24dp.xml" value="0.155" />
         <entry key="app/src/main/res/drawable/media_item_background.xml" value="0.155" />
         <entry key="app/src/main/res/drawable/media_item_mask.xml" value="0.155" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/content_main.xml" value="0.18342391304347827" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_second.xml" value="0.25" />
       </map>
