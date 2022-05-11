@@ -26,7 +26,7 @@ public class ListFragment extends Fragment {
 
     RecyclerView recyclerView;
 
-    static MusicListe<Music> musicArrayList = new MusicListe<>();
+    MusicListe<Music> musicArrayList = new MusicListe<>();
     RecyclerViewAdapter adapter;
     Context context;
 
@@ -39,6 +39,8 @@ public class ListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler);
         recyclerView.setLayoutManager((new LinearLayoutManager(view.getContext())));
         context = this.getContext();
+
+        this.musicArrayList.add(new Music("titre 1","artiste 1"));
 
         adapter = new RecyclerViewAdapter(this.getContext(), musicArrayList.getList());
         recyclerView.setAdapter(adapter);
@@ -64,8 +66,11 @@ public class ListFragment extends Fragment {
         super.onDestroyView();
     }
 
+    public MusicListe getMusicList() {
+        return musicArrayList;
+    }
 
-    static class MusicListe<Music>{
+    class MusicListe<Music>{
         private ArrayList<Music> list;
 
         public MusicListe(){

@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
 
-        //getListSongServeur(url);
+
         setSupportActionBar(binding.toolbar);
 
         setContentView(binding.getRoot());
@@ -250,6 +250,22 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
 
+        }
+
+    }
+
+    private void openSongPage(String name) {
+        ArrayList<Music> knownSongs = ((ListFragment) fragment).getMusicList().getList();
+        for(Music song : knownSongs){
+            if(song.title==name){
+                fragment = new SecondFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
+
+                ((SecondFragment) fragment).setTitle(song.title);
+                ((SecondFragment) fragment).setArtist(song.artist);
+
+            }
         }
 
     }
