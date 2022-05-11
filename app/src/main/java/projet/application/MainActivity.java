@@ -27,6 +27,7 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -38,8 +39,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,20 +61,24 @@ public class MainActivity extends AppCompatActivity {
     private String postBodyString;
     private MediaType mediaType;
     private RequestBody requestBody;
+    private Response serverResponse;
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
 
+        setContentView(R.layout.activity_main);
+        fragment = new ListFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
 
+        //getListSongServeur(url);
         setSupportActionBar(binding.toolbar);
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        setContentView(binding.getRoot());
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     Snackbar.make(view, "Votre telephone ne permet pas la reconnaissance vocale", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else{
+
                     if(speechRec==null){
 
                         speechRec = SpeechRecognizer.createSpeechRecognizer(context);
@@ -105,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     recording = !recording;
 
                 }
+                getListSongServeur(url);
             }
         });
     }
@@ -201,6 +213,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void getListSongServeur( String URL){
+        postRequest("This argument doesn't matter",URL+"search");
+        Log.d(TAG, "request sent");
+
+        if(fragment.getClass()==ListFragment.class && serverResponse!=null){
+
+
+
+            Log.d(TAG, "verif valeur = " + serverResponse);
+
+            /*
+            // Convert String to json object
+            JSONObject json = null;
+            try {
+                json = new JSONObject(serverResponse.body().string());
+
+                // get LL json object
+                JSONObject json_LL = json.getJSONObject(Integer.toString(0));
+
+                // get value from LL Json Object
+                String str_value=json_LL.getString("0");
+
+                Log.d(TAG, str_value);
+
+
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+
+
+            */
+            ((ListFragment) fragment).addToMusicArrayList(serverResponse.body().toString(), serverResponse.body().toString());
+
+            fragment = new ListFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_frame, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
+
+        }
+
+    }
+
     private RequestBody buildRequestBody(String msg) {
         postBodyString = msg;
         mediaType = MediaType.parse("text/plain");
@@ -208,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         return requestBody;
     }
 
-    private void postRequest(String message, String URL) {
+    public void postRequest(String message, String URL) {
         RequestBody requestBody = buildRequestBody(message);
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request
@@ -228,9 +281,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-
             }
-
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 runOnUiThread(new Runnable() {
@@ -238,13 +289,13 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             Toast.makeText(MainActivity.this, response.body().string(), Toast.LENGTH_LONG).show();
+                            Log.d(TAG, "response received");
+                            serverResponse = response;
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 });
-
-
             }
         });
     }
