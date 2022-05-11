@@ -11,6 +11,14 @@ import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.speech.RecognitionListener;
@@ -28,7 +36,9 @@ import projet.application.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
     private View myView;
     private boolean recording = false;
     SpeechRecognizer speechRec = null;
+    private String url = "http://10.0.2.2:5000/";
+
+    private String postBodyString;
+    private MediaType mediaType;
+    private RequestBody requestBody;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         context = getApplicationContext();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         setSupportActionBar(binding.toolbar);
 
@@ -69,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                         myView = view;
 
                         String requiredPermission = Manifest.permission.RECORD_AUDIO;
+
                         // If the user previously denied this permission then show a message explaining why
                         // this permission is needed
                         if (checkCallingOrSelfPermission(requiredPermission) == PackageManager.PERMISSION_DENIED) {
@@ -82,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else {
 
-                        speechRec.cancel();
+                        speechRec.stopListening();
                     }
 
                     recording = !recording;
@@ -149,8 +166,15 @@ public class MainActivity extends AppCompatActivity {
         public void onError(int error)
         {
             Log.d(TAG,  "error " +  error);
-            Snackbar.make(myView, "error " + error, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            if(error==SpeechRecognizer.ERROR_SPEECH_TIMEOUT || error==SpeechRecognizer.ERROR_NO_MATCH){
+
+                Snackbar.make(myView, "Je n'ai pas compris votre question.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+            else{
+                Snackbar.make(myView, "error " + error, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
         }
         public void onResults(Bundle results)
         {
@@ -163,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
                 str += data.get(i);
             }
 
-            Snackbar.make(myView, str, Snackbar.LENGTH_LONG)
+            Snackbar.make(myView, data.get(0).toString(), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-
+            postRequest(data.get(0).toString(),url+"read");
         }
         public void onPartialResults(Bundle partialResults)
         {
@@ -177,6 +201,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private RequestBody buildRequestBody(String msg) {
+        postBodyString = msg;
+        mediaType = MediaType.parse("text/plain");
+        requestBody = RequestBody.create(postBodyString, mediaType);
+        return requestBody;
+    }
+
+    private void postRequest(String message, String URL) {
+        RequestBody requestBody = buildRequestBody(message);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request
+                .Builder()
+                .post(requestBody)
+                .url(URL)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(final Call call, final IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Toast.makeText(MainActivity.this, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        call.cancel();
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Toast.makeText(MainActivity.this, response.body().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
 
+            }
+        });
+    }
 }
